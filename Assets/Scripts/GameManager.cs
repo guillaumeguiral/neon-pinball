@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 
 public class GameManager : MonoBehaviour
@@ -13,19 +14,29 @@ public class GameManager : MonoBehaviour
     public float Multiplier { get { return multiplier; } }
     [SerializeField] Text multiplierText;
 
-    [SerializeField] float tiltChance = 0.25f;
+    [SerializeField] float tiltChance = 0.10f;
 
+    [SerializeField] GameObject blackScreen;
+    [SerializeField] Image blackScreenImage;
     [SerializeField] GameObject boardPanel;
     [SerializeField] GameObject gameOverScreen;
     [SerializeField] Text gameOverText;
 
+    CameraManager cameraManager;
     PlayerControls playerControls;
     Scoreboard scoreboard;
 
     private void Start()
     {
+        cameraManager = FindObjectOfType<CameraManager>();
         playerControls = FindObjectOfType<PlayerControls>();
         scoreboard = FindObjectOfType<Scoreboard>();
+
+        blackScreen.SetActive(true);
+        blackScreenImage.DOFade(0, 3f).SetEase(Ease.Linear).OnComplete(() =>
+        {
+            blackScreen.SetActive(false);
+        });
 
         StartCoroutine(RemoveWelcomeMessage());
     }
@@ -73,6 +84,7 @@ public class GameManager : MonoBehaviour
         boardPanel.SetActive(false);
 
         gameOverScreen.SetActive(true);
+        gameOverText.text = "";
         gameOverText.DOText("FINAL SCORE: " + scoreboard.Score, 2f);
 
         playerControls.DeactivateControls();
@@ -91,7 +103,7 @@ public class GameManager : MonoBehaviour
     public void Tilt(Vector3 direction)
     {
         // Shake camera
-        Camera.main.DOShakePosition(0.25f, direction / 4f);
+        cameraManager.Tilt(direction);
 
         // Check if tilt is (randomly) detected
         bool isTiltDetected = Random.Range(0, 1f) < tiltChance;
@@ -105,6 +117,11 @@ public class GameManager : MonoBehaviour
             // Display TILT message
             Debug.Log("TILT");
         }
+    }
+
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
     IEnumerator RemoveWelcomeMessage()

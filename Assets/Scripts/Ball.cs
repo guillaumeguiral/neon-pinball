@@ -6,7 +6,6 @@ public class Ball : MonoBehaviour
     [SerializeField] float launchForce = 2400f;
 
     [SerializeField] AudioClip sndPlunger;
-    [SerializeField] AudioClip sndCollision;
 
     Rigidbody rb;
     AudioSource audioSource;
@@ -43,8 +42,6 @@ public class Ball : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-
-        // PlayCollisionSound(); Mmmmhhh...
     }
 
     void Freeze()
@@ -86,15 +83,6 @@ public class Ball : MonoBehaviour
         // Play plunger sound
         if (audioSource.isPlaying) audioSource.Stop();
         audioSource.PlayOneShot(sndPlunger);
-    }
-
-    private void PlayCollisionSound()
-    {
-        // If audio source is playing stop it
-        if (audioSource.isPlaying) audioSource.Stop();
-
-        // Play the collision sound
-        audioSource.PlayOneShot(sndCollision);
     }
 
     public void Tilt(Vector3 direction)

@@ -39,6 +39,14 @@ public class PlayerControls : MonoBehaviour
     {
         ProcessFlippers();
         ProcessPlunger();
+
+        if (gameManager.BallsLeft <= 0 && !isControlsActivated)
+        {
+            if (Input.anyKeyDown)
+            {
+                gameManager.RestartLevel();
+            }
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
